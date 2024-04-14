@@ -1,4 +1,4 @@
-FROM openjdk:21-alpine
+FROM openjdk:21
 WORKDIR /app
 EXPOSE 9081
 COPY target/artwoodcba.jar /app/artwoodcba.jar
