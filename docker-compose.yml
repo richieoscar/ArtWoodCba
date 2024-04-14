@@ -1,0 +1,54 @@
+version: "3.8"
+services:
+  database:
+    platform: linux/x86_64
+    image: mysql:8.0.19
+    container_name: artwoodmysqldb
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: password2020
+      MYSQL_ROOT_USER: root
+      MYSQL_DATABASE: artwoodcbadbdb
+    volumes:
+      - artwoodvol:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 5
+
+
+  artwood-cba:
+    platform: linux/x86_64
+    image: richieoscar/artwoodcba:lts
+    build:
+      dockerfile: .
+    restart: always
+
+    depends_on:
+      database:
+        condition: service_healthy
+    ports:
+      - "9080"
+    environment:
+      MYSQL_ROOT_PASSWORD: password2020
+      MYSQL_ROOT_USER: root
+      MYSQL_HOST: artwoodmysqldb
+      MYSQL_PORT: 3306
+
+  nginx:
+    image: nginx:alpine
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - agro-logistics
+    ports:
+      - "4000:4000"
+
+
+networks:
+  default:
+    name: artwoodcba-network
+
+volumes:
+  artwoodvol:
