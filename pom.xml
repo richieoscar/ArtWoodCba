@@ -95,6 +95,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<finalName>artwoodcba</finalName>
 	</build>
 
 </project>
