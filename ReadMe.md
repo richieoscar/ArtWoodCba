@@ -16,7 +16,7 @@ run the docker compose file with the command below
 
 cmd: docker compose up -d
 
-application server runs on port 9080
+application server runs on port 9081
 
 ## RUN WITHOUT DOCKER COMPOSE
 
