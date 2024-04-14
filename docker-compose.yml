@@ -3,24 +3,26 @@ services:
   database:
     platform: linux/x86_64
     image: mysql:8.0.19
-    container_name: agrologisticsdb
+    container_name: artwoodmysqldb
     ports:
       - "3306:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: payday2020
+      MYSQL_ROOT_PASSWORD: password2020
       MYSQL_ROOT_USER: root
-      MYSQL_DATABASE: agrologisticsdb
+      MYSQL_DATABASE: artwoodcbadbdb
     volumes:
-      - agrovol:/var/lib/mysql
+      - artwoodvol:/var/lib/mysql
     healthcheck:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
       timeout: 20s
       retries: 5
 
 
-  agro-logistics:
+  artwood-cba:
     platform: linux/x86_64
-    image: richieoscar/agrologistics:lts
+    image: richieoscar/artwoodcba:lts
+    build:
+      dockerfile: .
     restart: always
 
     depends_on:
@@ -29,9 +31,9 @@ services:
     ports:
       - "9080"
     environment:
-      MYSQL_ROOT_PASSWORD: payday2020
+      MYSQL_ROOT_PASSWORD: password2020
       MYSQL_ROOT_USER: root
-      MYSQL_HOST: agrologisticsdb
+      MYSQL_HOST: artwoodmysqldb
       MYSQL_PORT: 3306
 
   nginx:
@@ -46,7 +48,7 @@ services:
 
 networks:
   default:
-    name: agro-network
+    name: artwoodcba-network
 
 volumes:
-  agrovol:
+  artwoodvol:

@@ -1,1 +1,22 @@
-spring.application.name=ArtWoodCba
+spring:
+  datasource:
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/artwoodcbadb
+    password: ${MYSQL_ROOT_PASSWORD:root}
+    username: ${MYSQL_ROOT_USER:password2020}
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate.format_sql: true
+  sql:
+    init:
+      mode: always
+  application:
+    name: ArtWoodCba
+
+server:
+  port: 9081
+
+secret:
+  key: 8HHUNJRR848HON488486RT86RR7RR566E64EE67DDFCHFCYDDR65RER45644JHJVTFYRDYRDRTYDDRYD88656564636364354666
