@@ -52,7 +52,7 @@ public class AccountController {
     }
 
     @GetMapping("/history/{customerId}")
-    public ResponseEntity<DefaultApiResponse> close(@PathVariable("customerId") String customerId, @RequestParam(value = "accountId", required = false) String accountId,
+    public ResponseEntity<DefaultApiResponse> history(@PathVariable("customerId") String customerId, @RequestParam(value = "accountId", required = false) String accountId,
                                                     @RequestParam(value = "page", defaultValue = "0") int page,
                                                     @RequestParam(value = "size", defaultValue = "20") int size) {
         return ResponseEntity.ok(accountService.history(customerId, accountId, page, size));

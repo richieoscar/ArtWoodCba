@@ -1,4 +1,4 @@
 package com.richieoscar.artwoodcba.dto;
 
-public record CloseAccountDTO(String accountId) {
+public record CloseAccountDTO(String customerId,String accountId) {
 }

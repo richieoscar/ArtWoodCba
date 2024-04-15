@@ -205,14 +205,16 @@ public class AccountServiceImpl implements AccountService {
     public DefaultApiResponse close(CloseAccountDTO closeAccountDTO) {
         DefaultApiResponse defaultApiResponse = new DefaultApiResponse();
         try {
-            Optional<Account> account = accountRepository.findByAccountNumber(closeAccountDTO.accountId());
+            Optional<Customer> customer = customerRepository.findByCustomerId(closeAccountDTO.customerId());
+            if (customer.isEmpty()) throw new CustomerException("Customer not found");
+            Optional<Account> account = accountRepository.findByAccountNumberAndCustomer_Id(closeAccountDTO.accountId(), customer.get().getId());
             if (account.isEmpty()) throw new AccountException("Account with accountId not found");
             if (account.get().getStatus() == Status.CLOSED) throw new AccountException("Account already closed");
             account.get().setClosingDate(LocalDateTime.now());
             account.get().setStatus(Status.CLOSED);
             accountRepository.save(account.get());
             defaultApiResponse.setStatus("00");
-            defaultApiResponse.setMessage("Account Activated Successfully");
+            defaultApiResponse.setMessage("Account Closed Successfully");
         } catch (OptimisticLockException e) {
             log.info("Error Occurred activating account {}  ", e.getEntity());
             defaultApiResponse.setStatus("70");
@@ -258,7 +260,7 @@ public class AccountServiceImpl implements AccountService {
             boolean success = makeTransfer(sourceAccount.get(), destAccount.get(), transferDTO.amount(), srcCustomer.get().getCustomerId(), destCustomer.get().getCustomerId());
             if (success) {
                 defaultApiResponse.setStatus("00");
-                defaultApiResponse.setMessage("Self Transfer Successful");
+                defaultApiResponse.setMessage("Transfer Successful");
             }
         }
         return defaultApiResponse;
