@@ -4,11 +4,11 @@ import com.richieoscar.artwoodcba.config.SecurityPasswordEncoder;
 import com.richieoscar.artwoodcba.domain.Customer;
 import com.richieoscar.artwoodcba.dto.DefaultApiResponse;
 import com.richieoscar.artwoodcba.dto.SignUpRequest;
+import com.richieoscar.artwoodcba.dto.enums.Status;
 import com.richieoscar.artwoodcba.dto.enums.SystemRole;
 import com.richieoscar.artwoodcba.factory.CustomerFactory;
 import com.richieoscar.artwoodcba.repository.AccountRepository;
 import com.richieoscar.artwoodcba.repository.CustomerRepository;
-import com.richieoscar.artwoodcba.service.CustomerService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,8 +18,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -88,9 +86,9 @@ class CustomerServiceImplTest {
         assertNotNull(response);
 
         assertNotNull(response.getStatus());
-        assertEquals("00",response.getStatus());
+        assertEquals("00", response.getStatus());
 
-        verify(customerRepository,times(2)).findByEmail(signUpRequest.email());
+        verify(customerRepository, times(2)).findByEmail(signUpRequest.email());
     }
 
     @Test
@@ -103,6 +101,7 @@ class CustomerServiceImplTest {
         customer.setLastName("Yolo");
         customer.setRole(SystemRole.CUSTOMER);
         customer.setEmail("boy@yopmail@gmail.com");
+        customer.setStatus(Status.ACTIVE);
 
 
         SignUpRequest signUpRequest = new SignUpRequest("Password@34", "Password@34", "boy@yopmail.com",
@@ -110,10 +109,8 @@ class CustomerServiceImplTest {
 
         when(customerRepository.save(customer)).thenThrow(DataIntegrityViolationException.class);
 
-        doThrow(new DataIntegrityViolationException(""))
-                .when(customerRepository).save(customer);
+        doThrow(new DataIntegrityViolationException("")).when(customerRepository).save(customer);
 
-
-        assertThrows(DataIntegrityViolationException.class, ()-> customerService.register(signUpRequest));
+        assertThrows(DataIntegrityViolationException.class, () -> customerService.register(signUpRequest));
     }
 }
