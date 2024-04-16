@@ -18,14 +18,12 @@ public class CustomerController {
 
     @PostMapping("/register")
     public ResponseEntity<DefaultApiResponse> signUp(@Valid @RequestBody SignUpRequest signUpRequest) {
-        log.info("CustomerController::register {}", signUpRequest);
         DefaultApiResponse response = customerService.register(signUpRequest);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{customerId}")
     public ResponseEntity<DefaultApiResponse> customerInfo(@PathVariable("customerId") String customerId) {
-        log.info("CustomerController::customerInfo");
         DefaultApiResponse response = customerService.customerInfo(customerId);
         return ResponseEntity.ok(response);
     }

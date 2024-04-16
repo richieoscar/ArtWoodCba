@@ -6,9 +6,8 @@ import com.richieoscar.artwoodcba.domain.Customer;
 import com.richieoscar.artwoodcba.dto.DefaultApiResponse;
 import com.richieoscar.artwoodcba.dto.RegisterResponseDTO;
 import com.richieoscar.artwoodcba.dto.SignUpRequest;
-import com.richieoscar.artwoodcba.dto.enums.Status;
-import com.richieoscar.artwoodcba.dto.enums.SystemRole;
 import com.richieoscar.artwoodcba.exception.CustomerException;
+import com.richieoscar.artwoodcba.factory.CustomerFactory;
 import com.richieoscar.artwoodcba.repository.AccountRepository;
 import com.richieoscar.artwoodcba.repository.CustomerRepository;
 import com.richieoscar.artwoodcba.service.CustomerService;
@@ -18,10 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,6 +28,7 @@ public class CustomerServiceImpl implements CustomerService {
     private final CustomerRepository customerRepository;
     private final SecurityPasswordEncoder passwordEncoder;
     private final AccountRepository accountRepository;
+    private final CustomerFactory customerFactory;
 
     @Override
     public DefaultApiResponse register(SignUpRequest signUpRequest) {
@@ -43,7 +41,8 @@ public class CustomerServiceImpl implements CustomerService {
             PasswordManager.passwordMatch(signUpRequest.password(), signUpRequest.confirmPassword());
             PasswordManager.validatePassword(signUpRequest.password(), signUpRequest.confirmPassword());
             String encodePassword = passwordEncoder.passwordEncoder().encode(signUpRequest.password());
-            Customer customer = createCustomer(signUpRequest, encodePassword);
+            Customer customer = customerFactory.createCustomer(signUpRequest, encodePassword);
+            customer = customerRepository.save(customer);
             defaultApiResponse.setStatus("00");
             defaultApiResponse.setMessage("Customer Registered Successfully");
             defaultApiResponse.setData(new RegisterResponseDTO(customer.getCustomerId()));
@@ -73,18 +72,5 @@ public class CustomerServiceImpl implements CustomerService {
         return defaultApiResponse;
     }
 
-    private Customer createCustomer(SignUpRequest signUpRequest, String encodePassword) {
-        Customer customer = new Customer();
-        customer.setEmail(signUpRequest.email());
-        customer.setPassword(encodePassword);
-        customer.setRole(SystemRole.CUSTOMER);
-        customer.setFirstName(signUpRequest.firstName());
-        customer.setLastName(signUpRequest.lastName());
-        customer.setPhone(signUpRequest.phone());
-        customer.setRegistrationDate(LocalDateTime.now());
-        customer.setStatus(Status.ACTIVE);
-        customer.setCustomerId(UUID.randomUUID().toString());
-        customer = customerRepository.save(customer);
-        return customer;
-    }
+
 }
